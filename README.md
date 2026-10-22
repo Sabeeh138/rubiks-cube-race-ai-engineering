@@ -387,3 +387,7 @@ tests/
 pyproject.toml
 README.md
 ```
+
+### Results and screen recording
+<img width="911" height="380" alt="final result 2" src="https://github.com/user-attachments/assets/73b90966-311a-4578-a05c-67467e8d313e" />
+<img width="944" height="322" alt="final result" src="https://github.com/user-attachments/assets/ee55f3f1-7458-4485-86fd-6e398b0681f2" />
