@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f5f2" />
+    <meta
+      name="description"
+      content="Compare four assigned models on identical Rubik's Cube puzzles."
+    />
+    <title>Cube Race — Model Benchmark</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script type="module" src="/static/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to benchmark controls</a>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Cube Race home">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </span>
+          <span class="brand-copy">
+            <strong>Cube Race</strong>
+            <small>AI move benchmark</small>
+          </span>
+        </a>
+        <div class="identity" aria-label="Student identification for recording">
+          <span class="identity-label">ASSIGNMENT RECORDING</span>
+          <strong id="student-name">Student name not configured</strong>
+          <span id="student-roll">Roll number not configured</span>
+        </div>
+      </header>
+
+      <main id="main-content">
+        <section class="hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="eyebrow">AI ENGINEERING · ASSIGNMENT 02</p>
+            <h1 id="page-title">Four models.<br /><em>One fair scramble.</em></h1>
+            <p class="hero-description">
+              Compare move quality and decision time on the same reproducible cube states.
+              Every score comes from the benchmark API.
+            </p>
+          </div>
+          <div class="mode-stamp" id="mode-stamp" aria-label="Execution mode: mock">
+            <span class="mode-pulse" aria-hidden="true"></span>
+            <span>
+              <strong id="mode-stamp-label">MOCK MODE</strong>
+              <small id="mode-stamp-detail">Offline · no model credits</small>
+            </span>
+          </div>
+        </section>
+
+        <div class="notice notice-info" id="mode-notice">
+          <span class="notice-icon" aria-hidden="true">i</span>
+          <p id="mode-notice-copy">
+            This screen runs deterministic mock adapters by default. Mock results demonstrate
+            the workflow and <strong>are not AI performance measurements</strong>.
+          </p>
+        </div>
+
+        <section class="control-layout" aria-label="Puzzle setup and cube preview">
+          <article class="panel setup-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">01 / SET UP</p>
+                <h2>Choose a puzzle set</h2>
+              </div>
+              <span class="step-number">01</span>
+            </div>
+            <form id="benchmark-form">
+              <div class="field-grid">
+                <label class="field" for="seed-input">
+                  <span>Starting seed</span>
+                  <input id="seed-input" name="seed" type="number" value="2026" step="1" required />
+                  <small>Same seed reproduces the same scrambles.</small>
+                </label>
+                <label class="field" for="count-input">
+                  <span>Puzzles</span>
+                  <select id="count-input" name="puzzleCount">
+                    <option value="1">1 puzzle</option>
+                    <option value="3">3 puzzles</option>
+                    <option value="5" selected>5 puzzles</option>
+                  </select>
+                  <small>All four models see each puzzle.</small>
+                </label>
+                <label class="field field-wide" for="execution-mode">
+                  <span>Execution mode</span>
+                  <select id="execution-mode" name="executionMode">
+                    <option value="mock" selected>Mock demonstration · offline</option>
+                    <option value="live">Live benchmark · all four models</option>
+                    <option value="recording">Recording · three live + scripted Claude</option>
+                    <option value="diagnostic">State-aware diagnostic · R scramble</option>
+                    <option value="state_aware_experiment">Full State-Aware Experiment — Exploratory</option>
+                  </select>
+                  <small>Recording and diagnostic modes call Jev, GPT-6 Luna, and Clef live, and never call Claude.</small>
+                </label>
+                <label class="field field-wide" for="length-input">
+                  <span>Scramble length <b id="length-value">4 HTM</b></span>
+                  <input id="length-input" name="scrambleLength" type="range" min="4" max="5" value="4" />
+                  <small>Primary benchmark range: 4–5 face turns.</small>
+                </label>
+                <label class="preview-context-toggle" id="action-preview-control" for="action-previews-input" hidden>
+                  <input id="action-previews-input" name="actionPreviews" type="checkbox" checked />
+                  <span>
+                    <strong>Include one-step action previews</strong>
+                    <small>Exploratory v2 only. Sends the engine-computed facelet result of each legal candidate move; it does not send a recommendation or solver distance.</small>
+                  </span>
+                </label>
+              </div>
+              <div class="setup-summary" id="setup-summary">
+                <span class="summary-dot" aria-hidden="true"></span>
+                  <span>20 model trials · maximum 30 valid moves per trial</span>
+              </div>
+              <div class="notice notice-warning experiment-warning" id="experiment-warning" hidden>
+                <span class="notice-icon" aria-hidden="true">!</span>
+                <div>
+                  <p><strong>Substantial API usage warning.</strong> This exploratory run can make up to 450 live OpenRouter requests (3 live models × 5 pinned puzzles × 30 moves). State previews increase request input; charges may be substantial and total cost is unknown. Claude uses the existing scripted demo and makes no API calls. Results remain exploratory and excluded from the official report.</p>
+                  <label class="usage-acknowledgement" for="live-usage-confirmed">
+                    <input id="live-usage-confirmed" name="liveUsageConfirmed" type="checkbox" />
+                    <span>I understand and want to start this live exploratory experiment.</span>
+                  </label>
+                </div>
+              </div>
+              <div class="button-row">
+                <button class="button button-quiet" id="preview-button" type="button">
+                  Preview scramble
+                </button>
+                <button class="button button-primary" id="run-button" type="submit">
+                  <span>Run mock benchmark</span>
+                  <span aria-hidden="true">↗</span>
+                </button>
+              </div>
+            </form>
+            <p class="tiny-note">Live, recording, and diagnostic modes require backend OpenRouter configuration and may incur charges for live models. Credentials stay on the backend.</p>
+          </article>
+
+          <article class="panel cube-panel" aria-labelledby="cube-heading">
+            <div class="section-heading cube-heading-row">
+              <div>
+                <p class="eyebrow">PUZZLE PREVIEW</p>
+                <h2 id="cube-heading">Starting state</h2>
+              </div>
+              <span class="state-tag" id="cube-state-tag">Loading</span>
+            </div>
+            <div class="cube-context">
+              <strong id="cube-puzzle-id">primary-2026-01</strong>
+              <span id="cube-scramble">Requesting actual facelets from the cube engine…</span>
+            </div>
+            <div class="cube-wrap">
+              <div id="cube-net" class="cube-net" role="img" aria-label="Rubik's Cube facelet net in URFDLB layout">
+                <div class="cube-face face-u" data-face="U"><span class="face-label">U</span><div class="stickers"></div></div>
+                <div class="cube-face face-l" data-face="L"><span class="face-label">L</span><div class="stickers"></div></div>
+                <div class="cube-face face-f" data-face="F"><span class="face-label">F</span><div class="stickers"></div></div>
+                <div class="cube-face face-r" data-face="R"><span class="face-label">R</span><div class="stickers"></div></div>
+                <div class="cube-face face-b" data-face="B"><span class="face-label">B</span><div class="stickers"></div></div>
+                <div class="cube-face face-d" data-face="D"><span class="face-label">D</span><div class="stickers"></div></div>
+              </div>
+            </div>
+            <ul class="color-legend" aria-label="Facelet color legend">
+              <li><i class="color-u"></i>U · White</li>
+              <li><i class="color-r"></i>R · Red</li>
+              <li><i class="color-f"></i>F · Green</li>
+              <li><i class="color-d"></i>D · Yellow</li>
+              <li><i class="color-l"></i>L · Orange</li>
+              <li><i class="color-b"></i>B · Blue</li>
+            </ul>
+            <button class="button button-quiet reference-button" id="reference-button" type="button">
+              Play Verified Reference Solution
+            </button>
+            <p class="tiny-note">Algorithmic baseline only. It uses the exact short-state solver and makes no model request.</p>
+          </article>
+        </section>
+
+        <section class="run-panel panel" aria-labelledby="run-heading">
+          <div class="run-panel-top">
+            <div>
+              <p class="eyebrow">02 / BENCHMARK</p>
+              <h2 id="run-heading">Run status</h2>
+            </div>
+            <span class="run-status-badge status-idle" id="run-status-badge">Ready</span>
+          </div>
+          <div class="progress-copy">
+            <span id="progress-label">Preview a scramble, then start a mock run.</span>
+            <span id="progress-count">0 / 0 trials</span>
+          </div>
+          <progress id="run-progress" max="1" value="0" aria-label="Benchmark progress"></progress>
+          <div class="run-detail-row">
+            <span id="current-puzzle-label">No active run</span>
+            <span id="run-id-label"></span>
+          </div>
+          <p class="live-policy">
+            Move histories are shown when trials complete. This API does not stream individual turns,
+            so the display will not simulate live moves.
+          </p>
+          <div id="error-message" class="error-message" role="alert" hidden></div>
+          <button class="button button-quiet retry-status-button" id="retry-status-button" type="button" hidden>
+            Resume status checks
+          </button>
+        </section>
+
+        <section id="results-section" class="results-section" aria-labelledby="results-heading" hidden>
+          <div class="results-heading-row">
+            <div>
+              <p class="eyebrow">03 / RESULTS</p>
+              <h2 id="results-heading">Benchmark comparison</h2>
+              <p class="results-subtitle" id="results-subtitle"></p>
+            </div>
+            <label class="field puzzle-picker" for="puzzle-picker">
+              <span>Inspect puzzle</span>
+              <select id="puzzle-picker"></select>
+            </label>
+          </div>
+
+          <div class="results-grid">
+            <article class="panel chart-panel">
+              <div class="section-heading compact-heading">
+                <div>
+                  <p class="eyebrow">SUCCESS RATE</p>
+                  <h3>Solved trials by model</h3>
+                </div>
+              </div>
+              <div id="solve-chart" class="solve-chart" role="img" aria-label="Solve rate comparison"></div>
+              <p class="chart-footnote" id="metrics-scope">Solved trials ÷ eligible trials. Mock figures are workflow checks, not model scores.</p>
+            </article>
+            <article class="panel table-panel">
+              <div class="section-heading compact-heading">
+                <div>
+                  <p class="eyebrow">AGGREGATE METRICS</p>
+                  <h3>Across this run</h3>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Assigned model</th>
+                      <th scope="col">Solve rate</th>
+                      <th scope="col">Avg. valid-move latency (ms)</th>
+                      <th scope="col">Avg. runtime (s)</th>
+                      <th scope="col">Avg. valid moves</th>
+                      <th scope="col">Avg. optimality gap</th>
+                    </tr>
+                  </thead>
+                  <tbody id="metrics-body"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+
+          <div class="selected-puzzle-heading">
+            <div>
+              <p class="eyebrow">PUZZLE DETAILS</p>
+              <h3 id="selected-puzzle-heading">Selected puzzle</h3>
+            </div>
+            <span id="selected-puzzle-scramble" class="scramble-chip-row"></span>
+          </div>
+          <section id="live-trial-section" class="trial-group" aria-labelledby="live-trial-heading">
+            <div class="selected-puzzle-heading">
+              <div>
+                <p class="eyebrow">MODEL TRIALS</p>
+                <h3 id="live-trial-heading">Genuine live-model results</h3>
+              </div>
+            </div>
+            <div id="live-trial-cards" class="trial-grid"></div>
+          </section>
+          <section id="simulated-trial-section" class="trial-group simulated-group" aria-labelledby="simulated-trial-heading" hidden>
+            <div class="selected-puzzle-heading">
+              <div>
+                <p class="eyebrow">SCRIPTED DEMONSTRATION</p>
+                <h3 id="simulated-trial-heading">Claude simulated demonstration</h3>
+              </div>
+            </div>
+            <div id="simulated-trial-card" class="trial-grid"></div>
+          </section>
+        </section>
+
+        <section id="reference-section" class="reference-section panel" aria-labelledby="reference-heading" hidden>
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">ALGORITHMIC BASELINE</p>
+              <h2 id="reference-heading">Verified reference solution</h2>
+            </div>
+            <span id="reference-status" class="state-tag">Ready</span>
+          </div>
+          <p class="reference-provenance">REFERENCE SOLVER — ALGORITHMIC BASELINE, NOT AN LLM RESULT</p>
+          <p id="reference-identity" class="tiny-note">Recording identity · Student name not configured · Roll number not configured</p>
+          <div class="reference-summary">
+            <div><span>Solution sequence</span><strong id="reference-moves">Not calculated yet</strong></div>
+            <div><span>Move count (HTM)</span><strong id="reference-move-count">—</strong></div>
+            <div><span>Verification</span><strong id="reference-confirmation">Not run</strong></div>
+          </div>
+          <p id="reference-progress" class="tiny-note" role="status" aria-live="polite">Choose “Play Verified Reference Solution” to calculate and replay the exact solution for the displayed puzzle.</p>
+        </section>
+
+        <footer class="footer">
+          <span>Rubik's Cube Race · AI Engineering Assignment 02</span>
+          <span>HTM · one move token counts as one turn</span>
+          <a href="/docs">Backend API docs ↗</a>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

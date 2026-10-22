@@ -1,0 +1,81 @@
+Metadata-Version: 2.4
+Name: rubiks-cube-race
+Version: 0.1.0
+Summary: AI Engineering Assignment 02: Rubik's Cube Race
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi<1,>=0.115
+Requires-Dist: python-dotenv<2,>=1.0
+Requires-Dist: uvicorn<1,>=0.30
+Provides-Extra: test
+Requires-Dist: httpx<1,>=0.27; extra == "test"
+Requires-Dist: pytest<9,>=8; extra == "test"
+
+# Rubik's Cube Race
+
+Starter project for AI Engineering Assignment 02. The application will compare four OpenRouter models choosing moves for the same Rubik's Cube states.
+
+## Current scope
+
+Phases 0 and 1 are complete in this starter. It includes environment configuration, an API compatibility record, and a FastAPI health endpoint. The cube engine, model adapters, benchmark runner, and frontend have not been implemented yet. The health endpoint does not contact OpenRouter and does not require an API key.
+
+## Requirements
+
+- Python 3.11 or newer
+- pip
+
+## Setup (Windows PowerShell)
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[test]"
+Copy-Item .env.example .env
+```
+
+`OPENROUTER_API_KEY` is intentionally blank in `.env.example`. Keep any real key in the ignored `.env` file or the process environment; never commit it. Phase 1 does not make model requests, and a key is not needed to run the health endpoint or tests.
+
+## Run the local health endpoint
+
+```powershell
+python -m uvicorn app.main:app --reload
+```
+
+Open `http://127.0.0.1:8000/api/health`. The expected response is `{"status":"ok"}`. The interactive API docs are at `http://127.0.0.1:8000/docs`.
+
+## Run tests
+
+```powershell
+python -m pytest
+```
+
+Tests use a local FastAPI test client and do not contact OpenRouter.
+
+## Configuration
+
+`app.config.Settings.from_env()` reads `OPENROUTER_API_KEY` from the process environment and the project `.env` file (process values take precedence). The key remains optional for local health checks. When code that requires OpenRouter access is added in a later phase, call `Settings.from_env(require_openrouter_api_key=True)`; missing configuration raises a `ConfigurationError` with setup guidance.
+
+## OpenRouter compatibility
+
+The requested model IDs, current catalog status, documented endpoints, request/response shapes, and access/pricing caveats are recorded in [docs/API_COMPATIBILITY.md](docs/API_COMPATIBILITY.md). The model IDs are preserved as assigned. No live model requests have been made.
+
+## Project layout
+
+```text
+app/
+  benchmark/       # reserved for benchmark orchestration
+  cube/            # reserved for the deterministic cube engine
+  models/           # reserved for model adapter interfaces
+  config.py         # environment configuration and validation
+  main.py           # FastAPI app and health route
+docs/
+  API_COMPATIBILITY.md
+tests/
+  test_config.py
+  test_health.py
+.env.example
+.gitignore
+pyproject.toml
+README.md
+```
